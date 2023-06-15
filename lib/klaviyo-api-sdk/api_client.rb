@@ -85,6 +85,7 @@ module KlaviyoAPI
     # @option opts [Hash] :header_params Header parameters
     # @option opts [Hash] :query_params Query parameters
     # @option opts [Hash] :form_params Query parameters
+    # @option opts [Hash] :proxy_params Typhoeus direct parameters (for proxy settings)
     # @option opts [Object] :body HTTP body (JSON/XML)
     # @return [Typhoeus::Request] A Typhoeus Request
     def build_request(http_method, path, opts = {})
@@ -95,6 +96,7 @@ module KlaviyoAPI
       query_params = opts[:query_params] || {}
       form_params = opts[:form_params] || {}
       follow_location = opts[:follow_location] || true
+      proxy_params = opts[:proxy_params] || {}
 
       update_params_for_auth! header_params, query_params, opts[:auth_names]
       update_page_cursor! header_params, query_params
@@ -114,7 +116,7 @@ module KlaviyoAPI
         :sslkey => @config.key_file,
         :verbose => @config.debugging,
         :followlocation => follow_location
-      }
+      }.merge(proxy_params)
 
       # set custom cert, if provided
       req_opts[:cainfo] = @config.ssl_ca_cert if @config.ssl_ca_cert
